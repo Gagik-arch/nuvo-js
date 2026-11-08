@@ -1,6 +1,6 @@
-import { mergeAttributes } from '../utils';
+import { mergeAttributes, mergeEvents } from '../utils';
 import type {
-    Children,  DOMElement, VirtualHTMLElement
+    Children, DOMElement, VirtualHTMLElement
 } from './types';
 
 function hasKeyedChildren(
@@ -15,7 +15,7 @@ function hasKeyedChildren(
     );
 
     if (!hasKeys) {
-        return  false;
+        return false;
     }
 
     const hasMissingKeys = keys.some(
@@ -41,13 +41,13 @@ function hasKeyedChildren(
 
 export function compareProps(
     oldNode: DOMElement | null,
-    newNode: DOMElement | null 
-) { 
+    newNode: DOMElement | null
+) {
     if (!oldNode || !newNode) return false;
-    
+
     const oldNAttrs = oldNode.attributes;
     const newNAttrs = newNode.attributes;
-  
+
     if (oldNode.tagName !== newNode.tagName) return false;
 
     if (oldNAttrs.length !== newNAttrs.length) return false;
@@ -65,12 +65,12 @@ function keyedDiff(
     dom: DOMElement,
     newChildren: VirtualHTMLElement[]
 ) {
-    const oldChildren = Array.from( dom.children) as VirtualHTMLElement[];
+    const oldChildren = Array.from(dom.children) as VirtualHTMLElement[];
 
-    const oldByKey = new Map( oldChildren.map(child => [
+    const oldByKey = new Map(oldChildren.map(child => [
         child.__key,
-        child 
-    ]) );
+        child
+    ]));
 
     const newKeys = new Set(
         newChildren.map(child => child.__key)
@@ -81,7 +81,7 @@ function keyedDiff(
             child.remove();
         }
     }
-   
+
     let anchor: Element | null = dom.firstElementChild;
 
     for (const newChild of newChildren) {
@@ -94,11 +94,12 @@ function keyedDiff(
         }
 
         if (current.tagName !== newChild.tagName) {
-            current.replaceWith(newChild); 
+            current.replaceWith(newChild);
             oldByKey.set(newChild.__key, newChild);
             current = newChild;
         } else if (compareProps(current, newChild)) {
             mergeAttributes(current, newChild);
+            mergeEvents(current, newChild.__events)
         }
 
         if (current !== anchor) {
@@ -108,11 +109,12 @@ function keyedDiff(
         anchor = current.nextElementSibling;
     }
 }
+
 function unKeyedDiff(dom: DOMElement, newChildren: DOMElement[]) {
     const oldChildren = Array.from(dom.childNodes);
 
     const max = Math.max(oldChildren.length, newChildren.length);
-  
+
     for (let i = 0; i < max; i++) {
         const oldNode = oldChildren[i] as DOMElement | undefined;
         const newNode = newChildren[i] as DOMElement | undefined;
@@ -128,7 +130,7 @@ function unKeyedDiff(dom: DOMElement, newChildren: DOMElement[]) {
         if (!oldNode && newNode) {
             dom.append(newNode);
         } else if (oldNode && !newNode) {
-            dom.removeChild(oldNode); 
+            dom.removeChild(oldNode);
         } else if (oldNode && newNode && shouldReplace) {
             oldNode.replaceWith(newNode);
         }
@@ -146,7 +148,7 @@ export function setupChildren<T extends DOMElement>(
                 ? Array.from(children(new Set(dom.childNodes)))
                 : children;
 
-        const extracted = newChildren.filter(Boolean) as DOMElement[];
+        const extracted = newChildren.filter(Boolean) as VirtualHTMLElement[];
 
         if (isForceUpdate) {
             dom.replaceChildren(...extracted);
@@ -155,7 +157,7 @@ export function setupChildren<T extends DOMElement>(
 
             if (diffMode) {
                 keyedDiff(dom, extracted);
-            } else { 
+            } else {
                 unKeyedDiff(dom, extracted);
             }
         }

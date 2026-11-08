@@ -7,16 +7,16 @@ export type NodeChildren = string | ChildNode | undefined | null;
 export type DOMElement = HTMLElement | SVGElement;
 
 export type Dataset = Record<`data-${string}`, string>;
-export type HTMLTags = keyof HTMLElementTagNameMap; 
+export type HTMLTags = keyof HTMLElementTagNameMap;
 
-export type HTMLElementTags = HTMLElementTagNameMap[HTMLTags]; 
+export type HTMLElementTags = HTMLElementTagNameMap[HTMLTags];
 
 export type Children = NodeChildren | DocumentFragment | HTMLElement;
 
 export type EventType<T extends HTMLElement> = {
     [K in keyof Handlers]?: Handlers[K] extends ((this: T, ev: infer E) => void) | null
-        ? (ev: E) => void
-        : never;
+    ? (ev: E) => void
+    : never;
 };
 
 export type ElementPropsType<T extends HTMLElementTags = HTMLElement>
@@ -34,6 +34,8 @@ export interface ElementConstructorType<T extends HTMLElementTags> {
     rootElement?: HTMLElement | null;
 }
 
-export type VirtualHTMLElement = DOMElement & {
+export type VirtualHTMLElement<T extends HTMLElementTags = HTMLElement> = DOMElement & {
     __key?: string;
+    __events: EventType<T> | undefined;
+    __eventController?: AbortController;
 };

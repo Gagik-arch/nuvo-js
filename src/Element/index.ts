@@ -8,7 +8,7 @@ import { isWritableDOMProperty, setupChildren } from './utils';
 
 class Element<T extends HTMLElementTags> {
     public dom: T;
-    private readonly controller = new AbortController();
+    private controller = new AbortController();
 
     public constructor({
         tagName,
@@ -103,7 +103,7 @@ class Element<T extends HTMLElementTags> {
                 return;
             }
             // <- Input and textarea current value
-            
+
             // HTML attributes ->
             if (value == null || value === '') {
                 this.dom.removeAttribute(name);
@@ -141,23 +141,27 @@ class Element<T extends HTMLElementTags> {
         return this;
     }
 
-    private SetEvents(
-        events: EventType<T> | undefined
-    ) {
-        if (events) {
-            Object.entries<EventType<T>[keyof EventType<T>]>(events)
-                .forEach(([
-                    type,
-                    listener
-                ]) => {
-                    this.dom.addEventListener(
-                        type.replace(/^on/, ''),
-                        listener as EventListener,
-                        { signal: this.controller.signal }
-                    );
+    public SetEvents(events: EventType<T> | undefined) {
+        this.controller.abort();
+        this.controller = new AbortController();
 
-                });
+        if (!events) {
+            (this.dom as VirtualHTMLElement).__events = {};
+            return this;
         }
+
+        Object.entries<EventType<T>[keyof EventType<T>]>(events)
+            .forEach(([type, listener]) => {
+                this.dom.addEventListener(
+                    type.replace(/^on/, ''),
+                    listener as EventListener,
+                    { signal: this.controller.signal }
+                );
+            });
+
+        (this.dom as VirtualHTMLElement<T>).__events = events;
+
+        return this;
     }
 
     public Destroy() {
