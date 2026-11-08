@@ -1,4 +1,4 @@
-import type { DOMElement } from './Element/types';
+import type { DOMElement, EventType, VirtualHTMLElement } from './Element/types';
 
 export function camelToKebab(str: string) {
     return str.replace(/[A-Z]/g, match => '-' + match.toLowerCase());
@@ -15,7 +15,7 @@ export function setupClassName(
     if (typeof className === 'function') {
         className(dom.classList);
     } else {
-        if (dom.className !== className ) {
+        if (dom.className !== className) {
             dom.classList.value = className;
         }
     }
@@ -34,12 +34,12 @@ export function setupStyle(
     style: DOMElement['style'] | undefined,
     dom?: DOMElement
 ) {
-    if (!style ) return;
+    if (!style) return;
 
     Object.entries(style)
         .forEach(([
             property,
-            value 
+            value
         ]) => {
             if (!value) return;
 
@@ -108,15 +108,38 @@ export const isEqualObjects = (
 
 
 export function mergeAttributes(
-    oldChild: DOMElement,
-    newChild: DOMElement
+    oldChild: VirtualHTMLElement,
+    newChild: VirtualHTMLElement
 ) {
     for (let i = 0; i < newChild.getAttributeNames().length; i++) {
         const oldChildAtt = oldChild.attributes[i];
         const newChildAtt = newChild.attributes[i];
-        
-        if ((oldChildAtt && newChildAtt ) && oldChildAtt?.name === newChildAtt?.name && oldChildAtt?.value !== newChildAtt?.value) {
+
+        if ((oldChildAtt && newChildAtt) && oldChildAtt?.name === newChildAtt?.name && oldChildAtt?.value !== newChildAtt?.value) {
             oldChild.setAttribute(oldChildAtt.name, newChildAtt.value);
+            mergeEvents(oldChild, newChild.__events)
         }
     }
+}
+
+export function mergeEvents(
+    dom: VirtualHTMLElement,
+    events: EventType<any> | undefined
+) {
+    dom.__eventController?.abort();
+
+    const controller = new AbortController();
+
+    if (events) {
+        Object.entries(events).forEach(([type, listener]) => {
+            dom.addEventListener(
+                type.replace(/^on/, ''),
+                listener as EventListener,
+                { signal: controller.signal }
+            );
+        });
+    }
+
+    dom.__events = events ?? {};
+    dom.__eventController = controller;
 }
