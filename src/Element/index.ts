@@ -8,7 +8,6 @@ import { isWritableDOMProperty, setupChildren } from './utils';
 
 class Element<T extends HTMLElementTags> {
     public dom: T;
-    private controller = new AbortController();
 
     public constructor({
         tagName,
@@ -25,6 +24,7 @@ class Element<T extends HTMLElementTags> {
         this.dom = document.createElement(tagName) as T;
 
         const virtualDom = this.dom as VirtualHTMLElement;
+        virtualDom.__eventController = new AbortController();
 
         if (key) {
             virtualDom.__key = key;
@@ -89,7 +89,7 @@ class Element<T extends HTMLElementTags> {
             ) {
                 const nextValue = value == null ? '' : String(value);
 
-                if (!value == null || value === undefined) {
+                if (value == null) {
                     this.dom.removeAttribute('value');
                 } else {
                     this.dom.setAttribute('value', nextValue);
@@ -116,7 +116,7 @@ class Element<T extends HTMLElementTags> {
                 name in this.dom &&
                 isWritableDOMProperty(this.dom, name)
             ) {
-                if (value === undefined || value === undefined) {
+                if (value === undefined) {
                     this.dom.removeAttribute(name);
                     return
                 };
@@ -142,8 +142,12 @@ class Element<T extends HTMLElementTags> {
     }
 
     public SetEvents(events: EventType<T> | undefined) {
-        this.controller.abort();
-        this.controller = new AbortController();
+        const virtualDom = this.dom as VirtualHTMLElement<T>;
+
+        virtualDom.__eventController.abort();
+        virtualDom.__eventController = new AbortController();
+
+        virtualDom.__events = events ?? {};
 
         if (!events) {
             (this.dom as VirtualHTMLElement).__events = {};
@@ -155,17 +159,17 @@ class Element<T extends HTMLElementTags> {
                 this.dom.addEventListener(
                     type.replace(/^on/, ''),
                     listener as EventListener,
-                    { signal: this.controller.signal }
+                    { signal: virtualDom.__eventController.signal }
                 );
             });
 
-        (this.dom as VirtualHTMLElement<T>).__events = events;
 
         return this;
     }
 
     public Destroy() {
-        this.controller.abort('Element event is destroyed.');
+        const virtualDom = this.dom as VirtualHTMLElement;
+        virtualDom.__eventController.abort('Element event is destroyed.');
 
         this.Remove();
     }

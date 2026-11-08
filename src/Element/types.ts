@@ -36,6 +36,6 @@ export interface ElementConstructorType<T extends HTMLElementTags> {
 
 export type VirtualHTMLElement<T extends HTMLElementTags = HTMLElement> = DOMElement & {
     __key?: string;
-    __events: EventType<T> | undefined;
-    __eventController?: AbortController;
+    __events: EventType<T>;
+    __eventController: AbortController;
 };
