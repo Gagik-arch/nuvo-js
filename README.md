@@ -80,8 +80,6 @@ const element = new Element<HTMLDivElement>({
         ]
     }
 });
-
-document.body.append(element.dom);
 ```
 
 The `.dom` property provides access to the underlying native DOM element.
