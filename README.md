@@ -2,20 +2,21 @@
 
 **Nuvo** is a lightweight, TypeScript-first UI library built around native DOM APIs.
 
-Nuvo provides a class-based approach to building web interfaces without JSX or unnecessary rendering abstractions. It gives developers direct control over HTML and SVG elements while providing reactive state management and efficient DOM updates through keyed and unkeyed diffing.
+Nuvo provides a class-based approach to building web interfaces without JSX or a Virtual DOM. It gives developers direct control over HTML and SVG elements while providing reactive state management and efficient DOM updates through keyed and unkeyed diffing.
 
 ## Features
 
-- **DOM-first architecture** — Direct interaction with native DOM elements.
-- **TypeScript support** — Generic types and public type definitions.
-- **HTML elements** — Create and configure native HTML elements.
-- **SVG elements** — Build SVG graphics using the same architecture.
+- **DOM-first architecture** — Work directly with native DOM elements.
+- **TypeScript support** — Generic element types and public type definitions.
+- **HTML elements** — Create, configure, and update native HTML elements.
+- **SVG elements** — Build SVG graphics using the same class-based approach.
+- **Event management** — Register and clean up native DOM event listeners.
+- **Lifecycle callbacks** — Respond to element mount and unmount events.
 - **Reactive Store** — Manage application state with subscriptions and effects.
-- **DOM Diffing** — Efficiently update existing DOM elements.
-- **Keyed Diffing** — Reuse, insert, remove, and reorder elements using unique keys.
-- **No Virtual DOM** — Work directly with real DOM elements.
-- **No JSX required** — Build interfaces using standard JavaScript and TypeScript.
-- **Lightweight** — Built around native browser APIs.
+- **DOM diffing** — Efficiently update existing child nodes.
+- **Keyed diffing** — Reuse, insert, remove, and reorder elements using keys.
+- **No Virtual DOM** — Reconcile actual DOM nodes.
+- **No JSX required** — Build interfaces with standard JavaScript and TypeScript.
 
 ## Demo
 
@@ -23,25 +24,13 @@ Nuvo provides a class-based approach to building web interfaces without JSX or u
 
 ## Installation
 
-Install using npm:
-
 ```bash
 npm install @nuvo-js/core
 ```
 
 ## Usage
 
-### Browser Global
-
-Nuvo is also accessible through the browser global namespace:
-
-```javascript
-const nuvojs = window['nuvo-js'];
-
-console.log(nuvojs);
-```
-
-### ECMAScript Modules
+### ECMAScript modules
 
 Import `createRoot` from the package and mount your application to a DOM element.
 
@@ -53,7 +42,9 @@ import App from './App';
 
 const root = document.getElementById('app');
 
-createRoot(root!, App());
+if (root) {
+    createRoot(root, App());
+}
 ```
 
 **index.html**
@@ -62,117 +53,263 @@ createRoot(root!, App());
 <div id="app"></div>
 ```
 
+### Browser global
+
+Nuvo is also accessible through the browser global namespace:
+
+```javascript
+const nuvojs = window['nuvo-js'];
+
+console.log(nuvojs);
+```
+
 ## HTML Elements
 
-Create native HTML elements using the `Element` class.
-
-Each instance accepts a configuration object containing a `tagName` and `props`.
+Create native HTML elements using the `Element` class. The constructor accepts the HTML tag name, a props object, and an optional parent element.
 
 ```typescript
 import { Element } from '@nuvo-js/core';
 
-const element = new Element<HTMLDivElement>({
-    tagName: 'div',
-    props: {
+const element = new Element<HTMLDivElement>(
+    'div',
+    {
         className: 'row',
         children: [
-            'I am div element.'
+            'I am a div element.'
         ]
     }
-});
+);
 
 document.body.append(element.dom);
 ```
 
 The `.dom` property provides access to the underlying native DOM element.
 
-### TypeScript Generics
-
-You can specify the native HTML element type using generics:
+You can also pass a parent as the third constructor argument to append the element immediately:
 
 ```typescript
-
-const button = new Element<HTMLButtonElement>({
-    tagName: 'button',
-    props: {
-        children: ['Click me']
-    }
-});
-
-const div = new Element<HTMLDivElement>({
-    tagName: 'div',
-    props: {
+const element = new Element<HTMLDivElement>(
+    'div',
+    {
         className: 'container',
-        children:[button.dom]
-    }
-});
-
+        children: ['Hello Nuvo']
+    },
+    document.body
+);
 ```
 
-This provides better TypeScript support when working with native DOM elements.
+### TypeScript generics
 
-### Updating Properties
-
-Use `SetProps()` to update element properties:
+Specify the native element type with a generic to get the corresponding DOM API and type information:
 
 ```typescript
+const button = new Element<HTMLButtonElement>(
+    'button',
+    {
+        children: ['Click me']
+    }
+);
+
+const input = new Element<HTMLInputElement>(
+    'input',
+    {
+        type: 'text',
+        placeholder: 'Enter your name'
+    }
+);
+```
+
+### Children
+
+The `children` prop must be an array. It can contain text and DOM nodes created by Nuvo or other native DOM APIs.
+
+```typescript
+const button = new Element<HTMLButtonElement>(
+    'button',
+    {
+        children: ['Click me']
+    }
+);
+
+const container = new Element<HTMLDivElement>(
+    'div',
+    {
+        className: 'container',
+        children: [
+            'A button: ',
+            button.dom
+        ]
+    }
+);
+```
+
+### Updating properties
+
+Use `SetProps()` to update an existing element:
+
+```typescript
+const div = new Element<HTMLDivElement>(
+    'div',
+    {
+        className: 'container'
+    }
+);
+
 div.SetProps({
     className: 'container active',
     title: 'Updated container'
 });
 ```
 
-`SetProps()` updates the existing DOM element rather than requiring a new element instance.
+`SetProps()` updates the existing DOM element rather than creating a new instance.
+
+You can also update children. Nuvo reconciles the new child array with the existing DOM children:
+
+```typescript
+div.SetProps({
+    children: [
+        'Updated content'
+    ]
+});
+```
+
+Pass `true` as the second argument to force the child update:
+
+```typescript
+div.SetProps(
+    {
+        children: ['Fresh content']
+    },
+    true
+);
+```
+
+### Events
+
+Pass native event listeners through the `events` prop. Event names use the `on` prefix:
+
+```typescript
+const button = new Element<HTMLButtonElement>(
+    'button',
+    {
+        children: ['Click me'],
+        events: {
+            onClick: () => {
+                console.log('Button clicked');
+            }
+        }
+    }
+);
+```
+
+Use `SetEvents()` to replace the element's current event listeners:
+
+```typescript
+button.SetEvents({
+    onClick: () => {
+        console.log('Updated click handler');
+    }
+});
+```
+
+Nuvo manages listeners with an `AbortController`. Calling `SetEvents()` aborts the previous listeners before registering the new ones. Calling `Destroy()` also aborts the element's listeners.
+
+### Mount and unmount lifecycle
+
+Use `OnMount()` to run a callback when the element is connected to the document:
+
+```typescript
+div.OnMount((element) => {
+    console.log('Mounted:', element.dom);
+});
+```
+
+Use `OnUnMount()` to respond when the element is disconnected. The callback receives the Nuvo element instance; after the callback, Nuvo destroys the element and its managed event listeners.
+
+```typescript
+div.OnUnMount((element) => {
+    console.log('Unmounted:', element.dom);
+});
+```
+
+### Removing and destroying elements
+
+`Remove()` removes the DOM node from its parent.
+
+```typescript
+div.Remove();
+```
+
+`Destroy()` aborts the element's managed event listeners and removes the DOM node.
+
+```typescript
+div.Destroy();
+```
 
 ## SVG Elements
 
-Nuvo also provides an `SVGElement` class for creating SVG elements.
-
-You can use it to build reusable SVG components while maintaining TypeScript support.
-
-### Example: Trash Icon
+Nuvo provides an `SVGElement` class for creating native SVG elements. It uses the SVG namespace and exposes the underlying SVG node through `.dom`.
 
 ```typescript
 import { SVGElement } from '@nuvo-js/core';
-import type { SVGElementPropsType } from '@nuvo-js/core/types';
+
+const circle = new SVGElement<SVGCircleElement>(
+    'circle',
+    {
+        cx: 12,
+        cy: 12,
+        r: 10,
+        fill: 'none',
+        stroke: 'currentColor',
+        strokeWidth: 2
+    },
+    document.body
+);
+```
+
+### Example: reusable trash icon
+
+You can compose an SVG element with child SVG DOM nodes:
+
+```typescript
+import { SVGElement } from '../../../../../dist';
+import type { SVGElementPropsType } from '../../../../../dist/types';
 
 function Trash(props: SVGElementPropsType) {
-    return new SVGElement({
-        tagName: 'svg',
-        props: {
+    return (
+        new SVGElement('svg', {
             xmlns: 'http://www.w3.org/2000/svg',
             width: 24,
             height: 24,
             viewBox: '0 0 24 24',
             fill: 'none',
             stroke: 'currentColor',
-            strokeWidth: 2,
+            strokeWidth: 4,
             strokeLinecap: 'round',
             strokeLinejoin: 'round',
             ...props,
             children: [
-                new SVGElement<SVGPolylineElement>({
-                    tagName: 'polyline',
-                    props: {
-                        points: '3 6 5 6 21 6'
-                    }
-                }).dom,
+                new SVGElement<SVGPolylineElement>('polyline',
+                    {
+                        points: '3 6 5 6 21 6' as SVGPointList & string,
+                        strokeWidth: 4,
+                    }).dom,
 
-                new SVGElement<SVGPathElement>({
-                    tagName: 'path',
-                    props: {
-                        d: 'M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'
-                    }
-                }).dom
-            ]
-        }
-    }).dom;
+                new SVGElement<SVGPathElement>('path',
+                    {
+                        strokeWidth: 4,
+                        d: 'M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2',
+                    }).dom
+            ],
+        }).dom
+    );
 }
 
 export default Trash;
+
 ```
 
-The component returns a native SVG DOM element and accepts SVG properties through `SVGElementPropsType`.
+The `SVGElement` constructor accepts the SVG tag name, a props object, and a parent element. SVG attributes are applied to the native SVG node, and `.dom` exposes that node.
 
 ## Fragment
 
@@ -183,19 +320,19 @@ import { Element, Fragment } from '@nuvo-js/core';
 
 function App() {
     return Fragment([
-        new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: {
+        new Element<HTMLDivElement>(
+            'div',
+            {
                 children: ['First element']
             }
-        }).dom,
+        ).dom,
 
-        new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: {
+        new Element<HTMLDivElement>(
+            'div',
+            {
                 children: ['Second element']
             }
-        }).dom
+        ).dom
     ]);
 }
 ```
@@ -206,9 +343,7 @@ Fragments are useful for composing UI structures while keeping the resulting DOM
 
 Nuvo includes a reactive `Store` class for application state management.
 
-Create a store by providing an initial state and its corresponding TypeScript type.
-
-### Creating a Store
+### Creating a store
 
 ```typescript
 import { Store } from '@nuvo-js/core';
@@ -216,9 +351,9 @@ import { Store } from '@nuvo-js/core';
 const store = new Store<number[]>([]);
 ```
 
-### Get State
+### Get state
 
-Retrieve the current state:
+Retrieve the current state with `GetState()`:
 
 ```typescript
 const state = store.GetState();
@@ -226,7 +361,7 @@ const state = store.GetState();
 console.log(state);
 ```
 
-### Set State
+### Set state
 
 Update the state by providing a new value:
 
@@ -245,9 +380,7 @@ store.SetState(prev => [
 
 ### Subscribe
 
-Listen for state changes.
-
-`Subscribe()` executes its callback when the store state changes.
+Use `Subscribe()` to listen for state changes:
 
 ```typescript
 store.Subscribe(() => {
@@ -257,7 +390,7 @@ store.Subscribe(() => {
 
 ### Effect
 
-`Effect()` executes its callback immediately when registered and again whenever the store state changes.
+`Effect()` executes its callback immediately when registered and again whenever the store state changes:
 
 ```typescript
 store.Effect((state) => {
@@ -265,7 +398,7 @@ store.Effect((state) => {
 });
 ```
 
-### Store API Reference
+### Store API reference
 
 | Method | Description |
 |---|---|
@@ -277,51 +410,57 @@ store.Effect((state) => {
 
 ## DOM Diffing
 
-Nuvo provides DOM diffing to update existing elements without unnecessarily replacing the entire DOM structure.
+Nuvo updates existing child nodes rather than unnecessarily replacing the entire DOM structure.
 
-When updating an element's children through `SetProps()`, Nuvo compares the existing children with the new children.
+When you update an element's `children` through `SetProps()`, Nuvo compares the existing children with the new children.
 
 Nuvo supports two reconciliation strategies:
 
-- **Unkeyed Diffing** — Compares children by their position in the DOM.
-- **Keyed Diffing** — Identifies children using unique keys and reconciles them independently of their position.
+- **Unkeyed diffing** — Compares children by their position in the DOM.
+- **Keyed diffing** — Identifies children using unique keys and reconciles them independently of their position.
 
-### Unkeyed Diffing
+### Unkeyed diffing
 
-For collections without keys, Nuvo compares elements by their position.
+For collections without keys, Nuvo compares elements by their position:
 
 ```typescript
-const list = new Element<HTMLUListElement>({
-    tagName: 'ul',
-    props: {
+const list = new Element<HTMLUListElement>(
+    'ul',
+    {
         children: [
-            new Element<HTMLLIElement>({
-                tagName: 'li',
-                props: {
+            new Element<HTMLLIElement>(
+                'li',
+                {
                     children: ['Item 1']
                 }
-            }).dom,
+            ).dom,
 
-            new Element<HTMLLIElement>({
-                tagName: 'li',
-                props: {
+            new Element<HTMLLIElement>(
+                'li',
+                {
                     children: ['Item 2']
                 }
-            }).dom
+            ).dom
         ]
     }
-});
+);
 ```
 
-### Keyed Diffing
+### Keyed diffing
 
-When rendering dynamic collections, you can assign a unique `key` to each element.
+When rendering dynamic collections, assign a unique `key` to each element:
 
 ```typescript
-key: item.id
+const item = new Element<HTMLLIElement>(
+    'li',
+    {
+        key: 'todo-1',
+        children: ['Learn Nuvo']
+    }
+);
 ```
 
-Nuvo uses these keys to identify and reuse existing DOM elements.
+Nuvo uses keys to identify and reconcile existing DOM elements.
 
 The keyed diffing process:
 
@@ -330,7 +469,7 @@ The keyed diffing process:
 - **Insert** — Inserts newly created elements.
 - **Reorder** — Moves existing DOM elements when their order changes.
 
-### Example: Reactive Todo List
+### Example: reactive todo list
 
 ```typescript
 import { Element, Store } from '@nuvo-js/core';
@@ -342,25 +481,23 @@ interface Todo {
 
 const todos = new Store<Todo[]>([]);
 
-const list = new Element<HTMLOListElement>({
-    tagName: 'ol',
-    props: {
+const list = new Element<HTMLOListElement>(
+    'ol',
+    {
         children: []
     }
-});
+);
 
 todos.Effect((state) => {
     list.SetProps({
         children: state.map(todo =>
-            new Element<HTMLLIElement>({
-                tagName: 'li',
-                props: {
+            new Element<HTMLLIElement>(
+                'li',
+                {
                     key: todo.id,
-                    children: [
-                        todo.title
-                    ]
+                    children: [todo.title]
                 }
-            }).dom
+            ).dom
         )
     });
 });
@@ -380,7 +517,7 @@ todos.SetState(prev =>
 );
 ```
 
-### Key Best Practices
+### Key best practices
 
 - Always use unique keys among sibling elements.
 - Prefer stable identifiers such as database IDs or UUIDs.
@@ -407,11 +544,11 @@ Nuvo focuses on simplicity, control, and native browser capabilities.
 
 Rather than introducing another abstraction layer between developers and the DOM, Nuvo provides tools to work directly with the platform.
 
-Inspired by the Italian word nuovo and the French word nouveau, both meaning new, fresh, or recently developed, the name reflects Nuvo's vision of bringing a fresh, simple, and modern approach to building web interfaces.
+Inspired by the Italian word *nuovo* and the French word *nouveau*, both meaning new, fresh, or recently developed, the name reflects Nuvo's vision of bringing a fresh, simple, and modern approach to building web interfaces.
 
 Build with JavaScript. Control the DOM. Keep things simple.
 
-Nuvo — A fresh approach to the DOM.
+**Nuvo — A fresh approach to the DOM.**
 
 ## License
 
