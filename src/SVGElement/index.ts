@@ -17,7 +17,6 @@ class SVGElement<T extends SVGTags> {
         props?: SVGElementPropsType<T>,
         rootElement?: HTMLElement,
     ) {
-
         this.dom = document.createElementNS(svgNS, tagName) as T;
 
         if (rootElement) {

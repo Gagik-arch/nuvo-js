@@ -1,5 +1,5 @@
-import { SVGElement } from '@nuvo-js/core';
-import type { SVGElementPropsType } from '@nuvo-js/core/types';
+import { SVGElement } from '../../../../../dist';
+import type { SVGElementPropsType } from '../../../../../dist/types';
 
 function Trash(props: SVGElementPropsType) {
     return (
@@ -17,7 +17,7 @@ function Trash(props: SVGElementPropsType) {
             children: [
                 new SVGElement<SVGPolylineElement>('polyline',
                     {
-                        points: '3 6 5 6 21 6' as SVGPointList & string,
+                        points: '3 6 5 6 21 6' ,
                         strokeWidth: 4,
                     }).dom,
 

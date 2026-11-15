@@ -6,15 +6,19 @@ export type SVGTags = SVGElementTagNameMap[HTMLSVGTags];
 
 type Children = SVGTags | null | undefined;
 
+type SpecificSVGAttributes<T extends SVGElement = SVGTags> = {
+  [K in keyof T as T[K] extends Function ? never : K]?: string | number;
+};
+
 export type SVGPropsType<T extends SVGTags = SVGElement>
-    = Omit<Partial<T>, 'children' | 'className' | 'style'>
-    & SVGAttributes
+    = Omit<Partial<SpecificSVGAttributes<T>>, 'children' | 'className' | 'style'>
     & {
         children?: (Children)[];
         className?: ElementPropsType['className'];
         style?: ElementPropsType['style'];
         key?: ElementPropsType['key'];
     }
+    & SVGAttributes
     ;
 
 export type SVGElementPropsType<T extends SVGTags = SVGElement> = SVGPropsType<T>;
