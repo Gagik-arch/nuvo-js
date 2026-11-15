@@ -25,14 +25,14 @@ const createRoot = (
 } as const 
 
 
-if (typeof window !== 'undefined') {
-    Object.defineProperty(window, 'nuvo-js', {
-        value: Object.freeze(nuvojs),
-        writable: false,
-        configurable: false,
-        enumerable: false
-    });
-}
+// if (typeof window !== 'undefined') {
+//     Object.defineProperty(window, 'nuvo-js', {
+//         value: Object.freeze(nuvojs),
+//         writable: false,
+//         configurable: false,
+//         enumerable: false
+//     });
+// }
 
 export {
     Element,

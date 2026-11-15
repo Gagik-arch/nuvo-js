@@ -1,6 +1,6 @@
 import type { InputProps } from './types';
 import styles from './input.module.css';
-import { Element } from '@nuvo-js/core';
+import { Element } from '../../../../dist';
 
 class Input<T extends string | number = string> extends Element<HTMLLabelElement> {
     public readonly input: Element<HTMLInputElement>;
@@ -24,58 +24,52 @@ class Input<T extends string | number = string> extends Element<HTMLLabelElement
         valueType = 'string',
         ...props
     }: InputProps<T>) {
-        super({
-            tagName: 'label',
-            props: {
-                className: [
-                    styles.root,
-                    containerClassName,
-                    styles[`container_${variant}`],
-                    'squircle-26'
-                ].join(' '),
-            },
+        super('label', {
+            className: [
+                styles.root,
+                containerClassName,
+                styles[`container_${variant}`],
+                'squircle-26'
+            ].join(' '),
         });
 
-        this.input = new Element<HTMLInputElement>({
-            tagName: 'input',
-            props: {
-                className: [ styles.input, className ].join(' '),
-                type,
-                autocomplete,
-                name,
-                value: value?.toString() ?? '',
-                min: typeof min === 'number' ? String(min) : min,
-                max: typeof max === 'number' ? String(max) : max,
-                step: typeof step === 'number' ? String(step) : step,
-                events: {
-                    onchange: (e: Event) => {
-                        const target = e.currentTarget as HTMLInputElement;
+        this.input = new Element<HTMLInputElement>('input', {
+            className: [styles.input, className].join(' '),
+            type,
+            autocomplete,
+            name,
+            value: value?.toString() ?? '',
+            min: typeof min === 'number' ? String(min) : min,
+            max: typeof max === 'number' ? String(max) : max,
+            step: typeof step === 'number' ? String(step) : step,
+            events: {
+                onchange: (e: Event) => {
+                    const target = e.currentTarget as HTMLInputElement;
 
-                        const v = (
-                            valueType === 'number'
-                                ? +target.value
-                                : target.value
-                        ) as T;
+                    const v = (
+                        valueType === 'number'
+                            ? +target.value
+                            : target.value
+                    ) as T;
 
-                        onChange?.(e, v);
-                    },
-
-                    oninput: (e: Event) => {
-                        const target = e.currentTarget as HTMLInputElement;
-
-                        const v = (
-                            valueType === 'number'
-                                ? +target.value
-                                : target.value
-                        ) as T;
-
-                        onInput?.(e, v);
-                    },
-
-                    ...events,
+                    onChange?.(e, v);
                 },
-                ...props,
+
+                oninput: (e: Event) => {
+                    const target = e.currentTarget as HTMLInputElement;
+
+                    const v = (
+                        valueType === 'number'
+                            ? +target.value
+                            : target.value
+                    ) as T;
+
+                    onInput?.(e, v);
+                },
+
+                ...events,
             },
+            ...props,
         });
 
         this.SetProps({

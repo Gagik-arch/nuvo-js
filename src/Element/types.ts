@@ -1,7 +1,4 @@
 type Handlers = Omit<GlobalEventHandlers, 'addEventListener' | 'removeEventListener'>;
-type Nullable<T> = {
-    [K in keyof T]: T[K] | null;
-};
 
 export type NonFunctionPropertyNames<T> = {
     [K in keyof T]: T[K] extends Function ? never : K;
@@ -26,7 +23,6 @@ export type EventType<T extends Element> = {
 export type ElementPropsType<T extends HTMLElementTags = HTMLElement>
     =
     & Partial<Omit<Pick<T, NonFunctionPropertyNames<T>>, 'children' | 'className' | 'style'>>
-    & Omit<Nullable<Partial<T>>, 'children' | 'className' | 'style'>
     & Dataset
     & {
         children?: Children[];

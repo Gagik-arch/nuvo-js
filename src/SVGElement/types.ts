@@ -1,20 +1,21 @@
-import type { ElementPropsType} from '../Element/types'
+import type { ElementPropsType } from '../Element/types'
 
 export type HTMLSVGTags = keyof SVGElementTagNameMap;
 
 export type SVGTags = SVGElementTagNameMap[HTMLSVGTags];
 
-type Children =  SVGTags |  null | undefined;
+type Children = SVGTags | null | undefined;
 
 export type SVGPropsType<T extends SVGTags = SVGElement>
     = Omit<Partial<T>, 'children' | 'className' | 'style'>
     & SVGAttributes
     & {
-        children?: (Children)[] ;
-        className?:  ElementPropsType['className'] ;
+        children?: (Children)[];
+        className?: ElementPropsType['className'];
         style?: ElementPropsType['style'];
         key?: ElementPropsType['key'];
-    } ;
+    }
+    ;
 
 export type SVGElementPropsType<T extends SVGTags = SVGElement> = SVGPropsType<T>;
 
@@ -38,20 +39,20 @@ export interface SVGAttributes {
     accumulate?: 'none' | 'sum' | undefined;
     additive?: 'replace' | 'sum' | undefined;
     alignmentBaseline?:
-        | 'auto'
-        | 'baseline'
-        | 'before-edge'
-        | 'text-before-edge'
-        | 'middle'
-        | 'central'
-        | 'after-edge'
-        | 'text-after-edge'
-        | 'ideographic'
-        | 'alphabetic'
-        | 'hanging'
-        | 'mathematical'
-        | 'inherit'
-        | undefined;
+    | 'auto'
+    | 'baseline'
+    | 'before-edge'
+    | 'text-before-edge'
+    | 'middle'
+    | 'central'
+    | 'after-edge'
+    | 'text-after-edge'
+    | 'ideographic'
+    | 'alphabetic'
+    | 'hanging'
+    | 'mathematical'
+    | 'inherit'
+    | undefined;
     allowReorder?: 'no' | 'yes' | undefined;
     alphabetic?: number | string | undefined;
     amplitude?: number | string | undefined;

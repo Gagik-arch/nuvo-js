@@ -1,4 +1,4 @@
-import type { SVGElementPropsType } from '@nuvo-js/core/types';
+import type { SVGElementPropsType } from '../../../../dist/types';
 
 export type IconProps = SVGElementPropsType & {
     size?: number;

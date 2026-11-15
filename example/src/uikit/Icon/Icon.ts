@@ -1,4 +1,4 @@
-import { Element } from '@nuvo-js/core';
+import { Element } from '../../../../dist';
 import Icons from './assets/index';
 import type { IconProps } from './types';
 import styles from './style.module.css';
@@ -14,9 +14,7 @@ class Icon extends Element<HTMLSpanElement> {
             size: 24, ...props,
         };
 
-        super({
-            tagName: 'span',
-            props: {
+        super('span',{
                 className: [ styles.root, _props.className || '' ].join(' '),
                 style: {
                     width: `${size}px`,
@@ -29,7 +27,6 @@ class Icon extends Element<HTMLSpanElement> {
                         ..._props,
                     })
                 ],
-            },
         });
     }
 }
