@@ -1,4 +1,4 @@
-import type { DOMElement, EventType, VirtualHTMLElement } from './Element/types';
+import type { DOMElement, EventType, VirtualHTMLElement,ElementPropsType } from './Element/types';
 
 export function camelToKebab(str: string) {
     return str.replace(/[A-Z]/g, match => '-' + match.toLowerCase());
@@ -31,7 +31,7 @@ export function setupInnerHtml(
 }
 
 export function setupStyle(
-    style: DOMElement['style'] | undefined,
+    style?: ElementPropsType['style'],
     dom?: DOMElement
 ) {
     if (!style) return;

@@ -1,26 +1,23 @@
-import type { DOMElement, NodeChildren } from '../Element/types';
+import type { ElementPropsType } from '../Element/types'
 
 export type HTMLSVGTags = keyof SVGElementTagNameMap;
 
 export type SVGTags = SVGElementTagNameMap[HTMLSVGTags];
 
-type Children = NodeChildren;
+type Children = SVGTags | null | undefined;
 
-export type SVGElementPropsType<T extends SVGTags = SVGElement > = ElementPropsType<T>;
+export type SVGPropsType<T extends SVGTags = SVGElement>
+    = Omit<Partial<T>, 'children' | 'className' | 'style'>
+    & SVGAttributes
+    & {
+        children?: (Children)[];
+        className?: ElementPropsType['className'];
+        style?: ElementPropsType['style'];
+        key?: ElementPropsType['key'];
+    }
+    ;
 
-export type ElementPropsType<T extends SVGTags = SVGElement>
-    = Omit<Partial<T>, 'children' | 'className' | 'style'> & {
-        children?: (Children)[] | undefined;
-        className?: string | undefined;
-        style?: Partial<CSSStyleDeclaration> | undefined;
-        key?: string;
-    } & SVGAttributes;
-
-export interface SVGElementConstructorType<T extends SVGTags = SVGElement> {
-    tagName: HTMLSVGTags;
-    props: SVGElementPropsType<T>;
-    rootElement?: DOMElement | null;
-}
+export type SVGElementPropsType<T extends SVGTags = SVGElement> = SVGPropsType<T>;
 
 export interface SVGAttributes {
     suppressHydrationWarning?: boolean | undefined;
@@ -42,20 +39,20 @@ export interface SVGAttributes {
     accumulate?: 'none' | 'sum' | undefined;
     additive?: 'replace' | 'sum' | undefined;
     alignmentBaseline?:
-        | 'auto'
-        | 'baseline'
-        | 'before-edge'
-        | 'text-before-edge'
-        | 'middle'
-        | 'central'
-        | 'after-edge'
-        | 'text-after-edge'
-        | 'ideographic'
-        | 'alphabetic'
-        | 'hanging'
-        | 'mathematical'
-        | 'inherit'
-        | undefined;
+    | 'auto'
+    | 'baseline'
+    | 'before-edge'
+    | 'text-before-edge'
+    | 'middle'
+    | 'central'
+    | 'after-edge'
+    | 'text-after-edge'
+    | 'ideographic'
+    | 'alphabetic'
+    | 'hanging'
+    | 'mathematical'
+    | 'inherit'
+    | undefined;
     allowReorder?: 'no' | 'yes' | undefined;
     alphabetic?: number | string | undefined;
     amplitude?: number | string | undefined;

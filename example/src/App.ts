@@ -59,12 +59,9 @@ function App() {
         })
     });
 
-    const ol = new Element<HTMLOListElement>({
-        tagName: 'ol',
-        props: {
+    const ol = new Element<HTMLOListElement>('ol',{
             id: 'list_container',
             children: [],
-        },
     });
 
     store.Effect((state) => {
@@ -72,9 +69,7 @@ function App() {
             children: state.length
                 ? state.map((item) => {
                     return (
-                        new Element<HTMLLIElement>({
-                            tagName: 'li',
-                            props: {
+                        new Element<HTMLLIElement>('li',{
                                 className: 'squircle-26',
                                 key: item.id,
                                 children: [
@@ -91,16 +86,12 @@ function App() {
                                         },
                                     }).dom
                                 ],
-                            },
                         }).dom
                     );
                 })
                 : [
-                    new Element<HTMLSpanElement>({
-                        tagName: 'span',
-                        props: {
+                    new Element<HTMLSpanElement>('span',{
                             children: ['Todos does not exists!'],
-                        },
                     }).dom
                 ],
         });
@@ -108,19 +99,13 @@ function App() {
 
     return (
         Fragment([
-            new Element<HTMLHeadingElement>({
-                tagName: 'h1',
-                props: {
+            new Element<HTMLHeadingElement>('h1',{
                     children: ['Nuvo todo example.'],
-                },
             }).dom,
 
-            new Element<HTMLDivElement>({
-                tagName: 'div',
-                props: {
+            new Element<HTMLDivElement>('div',{
                     className: 'row',
                     children: [textfield.dom],
-                },
             }).dom,
 
             ol.dom

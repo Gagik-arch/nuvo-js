@@ -1,52 +1,44 @@
 import { setupChildren } from '../Element/utils';
 import {
-    setupClassName, setupStyle 
+    setupClassName, setupStyle
 } from '../utils';
 import type {
-    SVGElementConstructorType, SVGTags, SVGElementPropsType
+    SVGTags, SVGElementPropsType, HTMLSVGTags
 } from './types';
 
 const svgNS = 'http://www.w3.org/2000/svg';
 
-class SVGElement <T extends SVGTags > {
+class SVGElement<T extends SVGTags> {
     public dom: T;
     public key?: string | number | undefined = undefined;
 
-    public constructor({
-        tagName,
-        props: {
-            children,
-            className,
-            style,
-            ...props
-        },
-        rootElement,
-    }: SVGElementConstructorType) {
+    public constructor(
+        tagName: HTMLSVGTags,
+        props?: SVGElementPropsType<T>,
+        rootElement?: HTMLElement,
+    ) {
+
         this.dom = document.createElementNS(svgNS, tagName) as T;
 
         if (rootElement) {
             rootElement.appendChild(this.dom);
         }
 
-        this.SetProps(
-            {
-                className,
-                children,
-                style,
-                ...props,
-            }
-        );
+        this.SetProps(props );
     }
 
     public SetProps(
-        {
+        props: SVGElementPropsType<T> | undefined,
+        isForceUpdate = false
+    ) {
+
+        const {
             className,
             children,
             style,
-            ...props
-        }: SVGElementConstructorType['props'],
-        isForceUpdate = false
-    ) {
+            ..._props
+        } = props ?? {}
+
         if (className !== undefined) {
             setupClassName(
                 className,
@@ -69,7 +61,7 @@ class SVGElement <T extends SVGTags > {
             );
         }
 
-        Object.entries(props)
+        Object.entries(_props)
             .forEach(([
                 name,
                 value

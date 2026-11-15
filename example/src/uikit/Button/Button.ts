@@ -10,24 +10,21 @@ class Button extends Element<HTMLButtonElement> {
         onPress,
         events,
         ...props
-    }:ButtonProps) {
-        super({
-            tagName: 'button',
-            props: {
-                className: [
-                    styles.root,
-                    styles[`root_${variant}`],
-                    className
-                ].join(' '),
-                type,
-                events: {
-                    onclick: (e) => {
-                        onPress?.(e);
-                    },
-                    ...events,
+    }: ButtonProps) {
+        super('button', {
+            className: [
+                styles.root,
+                styles[`root_${variant}`],
+                className
+            ].join(' '),
+            type,
+            events: {
+                onclick: (e) => {
+                    onPress?.(e);
                 },
-                ...props,
+                ...events,
             },
+            ...props,
         });
     }
 }

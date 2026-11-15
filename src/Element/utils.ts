@@ -14,10 +14,8 @@ function hasKeyedChildren(
         key => key !== undefined && key !== null
     );
 
-    if (!hasKeys) {
-        return false;
-    }
-
+    if (!hasKeys)   return false;
+    
     const hasMissingKeys = keys.some(
         key => key === undefined || key === null
     );
@@ -53,9 +51,7 @@ export function compareProps(
     if (oldNAttrs.length !== newNAttrs.length) return false;
 
     for (const attr of oldNAttrs) {
-        if (newNode.getAttribute(attr.name) !== attr.value) {
-            return true;
-        }
+        if (newNode.getAttribute(attr.name) !== attr.value)  return true;
     }
 
     return false;
@@ -90,6 +86,7 @@ function keyedDiff(
         if (!current) {
             dom.insertBefore(newChild, anchor);
             anchor = newChild.nextElementSibling;
+            
             continue;
         }
 
