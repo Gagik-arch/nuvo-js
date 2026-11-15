@@ -17,7 +17,7 @@ function Trash(props: SVGElementPropsType) {
             children: [
                 new SVGElement<SVGPolylineElement>('polyline',
                     {
-                        points: '3 6 5 6 21 6' as SVGPointList & string,
+                        points: '3 6 5 6 21 6' ,
                         strokeWidth: 4,
                     }).dom,
 
