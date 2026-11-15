@@ -2,12 +2,29 @@ import type { ElementPropsType } from '../Element/types'
 
 export type HTMLSVGTags = keyof SVGElementTagNameMap;
 
-export type SVGTags = SVGElementTagNameMap[HTMLSVGTags];
+export type SVGTags = SVGElementTagNameMap[HTMLSVGTags] | SVGElement;
 
 type Children = SVGTags | null | undefined;
 
 type SpecificSVGAttributes<T extends SVGElement = SVGTags> = {
   [K in keyof T as T[K] extends Function ? never : K]?: string | number;
+};
+
+type CamelToKebab<S extends string> = S extends `${infer T}${infer U}`
+  ? `${T extends Uncapitalize<T> ? '' : '-'}${Lowercase<T>}${CamelToKebab<U>}`
+  : S;
+
+type FormatSVGAttributeKey<S extends string> =
+  S extends `xmlns${infer Rest}`
+    ? Rest extends '' ? 'xmlns' : `xmlns:${Lowercase<Rest>}`
+    : S extends `xlink${infer Rest}`
+      ? `xlink:${Lowercase<Rest>}`
+      : S extends `xml${infer Rest}`
+        ? `xml:${Lowercase<Rest>}`
+        : CamelToKebab<S>;
+
+type AllSVGAttributes = {
+  [K in keyof SVGAttributes as K | FormatSVGAttributeKey<K>]?: SVGAttributes[K];
 };
 
 export type SVGPropsType<T extends SVGTags = SVGElement>
@@ -18,7 +35,7 @@ export type SVGPropsType<T extends SVGTags = SVGElement>
         style?: ElementPropsType['style'];
         key?: ElementPropsType['key'];
     }
-    & SVGAttributes
+    &  AllSVGAttributes
     ;
 
 export type SVGElementPropsType<T extends SVGTags = SVGElement> = SVGPropsType<T>;
