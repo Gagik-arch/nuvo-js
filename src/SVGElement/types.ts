@@ -1,4 +1,4 @@
-import type { DOMElement, NodeChildren } from '../Element/types';
+import type {  NodeChildren } from '../Element/types';
 
 export type HTMLSVGTags = keyof SVGElementTagNameMap;
 
@@ -16,11 +16,6 @@ export type ElementPropsType<T extends SVGTags = SVGElement>
         key?: string;
     } & SVGAttributes;
 
-export interface SVGElementConstructorType<T extends SVGTags = SVGElement> {
-    tagName: HTMLSVGTags;
-    props: SVGElementPropsType<T>;
-    rootElement?: DOMElement | null;
-}
 
 export interface SVGAttributes {
     suppressHydrationWarning?: boolean | undefined;

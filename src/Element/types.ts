@@ -28,12 +28,6 @@ export type ElementPropsType<T extends HTMLElementTags = HTMLElement>
         key?: string;
     };
 
-export interface ElementConstructorType<T extends HTMLElementTags> {
-    tagName: HTMLTags;
-    props: ElementPropsType<T>;
-    rootElement?: HTMLElement | null;
-}
-
 export type VirtualHTMLElement<T extends HTMLElementTags = HTMLElement> = DOMElement & {
     __key?: string;
     __events: EventType<T>;

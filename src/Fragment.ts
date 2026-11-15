@@ -4,6 +4,7 @@ function Fragment(children: (DOMElement | string | DocumentFragment)[]) {
     const fragment = document.createDocumentFragment();
 
     fragment.append(...children);
+    
     return fragment;
 }
 

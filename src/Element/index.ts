@@ -1,5 +1,6 @@
 import type {
-    ElementPropsType, ElementConstructorType, HTMLElementTags, EventType, VirtualHTMLElement
+    ElementPropsType, HTMLElementTags, EventType, VirtualHTMLElement,
+    HTMLTags
 } from './types';
 import {
     isPlainObject, setupClassName, setupStyle
@@ -9,18 +10,20 @@ import { isWritableDOMProperty, setupChildren } from './utils';
 class Element<T extends HTMLElementTags> {
     public dom: T;
 
-    public constructor({
-        tagName,
-        props: {
+    public constructor(
+        tagName: HTMLTags,
+        props?: ElementPropsType<T>,
+        rootElement?: HTMLElement | null
+    ) {
+        const {
             children,
             className,
             style,
             events,
             key,
-            ...props
-        },
-        rootElement,
-    }: ElementConstructorType<T>) {
+            ..._props
+        } = props ?? ({} as Partial<ElementPropsType<T>>);
+
         this.dom = document.createElement(tagName) as T;
 
         const virtualDom = this.dom as VirtualHTMLElement;
@@ -39,7 +42,7 @@ class Element<T extends HTMLElementTags> {
                 className,
                 children,
                 style,
-                ...props,
+                ..._props,
             } as Omit<ElementPropsType<T>, 'className'> & {
                 className?: ((classList: DOMTokenList) => void) | string | undefined;
             }

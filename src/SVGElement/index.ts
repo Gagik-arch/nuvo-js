@@ -1,27 +1,30 @@
 import { setupChildren } from '../Element/utils';
 import {
-    setupClassName, setupStyle 
+    setupClassName, setupStyle
 } from '../utils';
 import type {
-    SVGElementConstructorType, SVGTags, SVGElementPropsType
+    SVGTags, SVGElementPropsType, HTMLSVGTags
 } from './types';
 
 const svgNS = 'http://www.w3.org/2000/svg';
 
-class SVGElement <T extends SVGTags > {
+class SVGElement<T extends SVGTags> {
     public dom: T;
     public key?: string | number | undefined = undefined;
 
-    public constructor({
-        tagName,
-        props: {
+    public constructor(
+        tagName: HTMLSVGTags,
+        props: SVGElementPropsType,
+        rootElement: HTMLElement,
+
+    ) {
+        const {
             children,
             className,
             style,
-            ...props
-        },
-        rootElement,
-    }: SVGElementConstructorType) {
+            ...__props
+        } = props ?? ({} as Partial<SVGElementPropsType<T>>)
+
         this.dom = document.createElementNS(svgNS, tagName) as T;
 
         if (rootElement) {
@@ -33,7 +36,7 @@ class SVGElement <T extends SVGTags > {
                 className,
                 children,
                 style,
-                ...props,
+                ...__props,
             }
         );
     }
@@ -44,7 +47,7 @@ class SVGElement <T extends SVGTags > {
             children,
             style,
             ...props
-        }: SVGElementConstructorType['props'],
+        }: SVGElementPropsType,
         isForceUpdate = false
     ) {
         if (className !== undefined) {
