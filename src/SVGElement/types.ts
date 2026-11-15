@@ -1,21 +1,22 @@
-import type {  NodeChildren } from '../Element/types';
+import type { ElementPropsType} from '../Element/types'
 
 export type HTMLSVGTags = keyof SVGElementTagNameMap;
 
 export type SVGTags = SVGElementTagNameMap[HTMLSVGTags];
 
-type Children = NodeChildren;
+type Children =  SVGTags |  null | undefined;
 
-export type SVGElementPropsType<T extends SVGTags = SVGElement > = ElementPropsType<T>;
+export type SVGPropsType<T extends SVGTags = SVGElement>
+    = Omit<Partial<T>, 'children' | 'className' | 'style'>
+    & SVGAttributes
+    & {
+        children?: (Children)[] ;
+        className?:  ElementPropsType['className'] ;
+        style?: ElementPropsType['style'];
+        key?: ElementPropsType['key'];
+    } ;
 
-export type ElementPropsType<T extends SVGTags = SVGElement>
-    = Omit<Partial<T>, 'children' | 'className' | 'style'> & {
-        children?: (Children)[] | undefined;
-        className?: string | undefined;
-        style?: Partial<CSSStyleDeclaration> | undefined;
-        key?: string;
-    } & SVGAttributes;
-
+export type SVGElementPropsType<T extends SVGTags = SVGElement> = SVGPropsType<T>;
 
 export interface SVGAttributes {
     suppressHydrationWarning?: boolean | undefined;

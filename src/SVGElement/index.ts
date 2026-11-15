@@ -14,16 +14,9 @@ class SVGElement<T extends SVGTags> {
 
     public constructor(
         tagName: HTMLSVGTags,
-        props: SVGElementPropsType,
-        rootElement: HTMLElement,
-
+        props?: SVGElementPropsType<T>,
+        rootElement?: HTMLElement,
     ) {
-        const {
-            children,
-            className,
-            style,
-            ...__props
-        } = props ?? ({} as Partial<SVGElementPropsType<T>>)
 
         this.dom = document.createElementNS(svgNS, tagName) as T;
 
@@ -31,25 +24,21 @@ class SVGElement<T extends SVGTags> {
             rootElement.appendChild(this.dom);
         }
 
-        this.SetProps(
-            {
-                className,
-                children,
-                style,
-                ...__props,
-            }
-        );
+        this.SetProps(props );
     }
 
     public SetProps(
-        {
+        props: SVGElementPropsType<T> | undefined,
+        isForceUpdate = false
+    ) {
+
+        const {
             className,
             children,
             style,
-            ...props
-        }: SVGElementPropsType,
-        isForceUpdate = false
-    ) {
+            ..._props
+        } = props ?? {}
+
         if (className !== undefined) {
             setupClassName(
                 className,
@@ -72,7 +61,7 @@ class SVGElement<T extends SVGTags> {
             );
         }
 
-        Object.entries(props)
+        Object.entries(_props)
             .forEach(([
                 name,
                 value

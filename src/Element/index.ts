@@ -15,15 +15,12 @@ class Element<T extends HTMLElementTags> {
         props?: ElementPropsType<T>,
         rootElement?: HTMLElement | null
     ) {
+        
         const {
-            children,
-            className,
-            style,
             events,
             key,
             ..._props
-        } = props ?? ({} as Partial<ElementPropsType<T>>);
-
+        } = props ?? {};
         this.dom = document.createElement(tagName) as T;
 
         const virtualDom = this.dom as VirtualHTMLElement;
@@ -37,31 +34,22 @@ class Element<T extends HTMLElementTags> {
             rootElement.appendChild(this.dom);
         }
 
-        this.SetProps(
-            {
-                className,
-                children,
-                style,
-                ..._props,
-            } as Omit<ElementPropsType<T>, 'className'> & {
-                className?: ((classList: DOMTokenList) => void) | string | undefined;
-            }
-        );
+        this.SetProps(_props as Omit<ElementPropsType<T>, 'events' | 'key'>);
 
         this.SetEvents(events);
     }
 
     public SetProps(
-        {
+        props: Omit<ElementPropsType<T>, 'events' | 'key'>,
+        isForceUpdate = false
+    ) {
+        const {
             className,
             children,
             style,
-            ...props
-        }: Omit<ElementPropsType<T>, 'className'> & {
-            className?: ((classList: DOMTokenList) => void) | string | undefined;
-        },
-        isForceUpdate = false
-    ) {
+            ..._props
+        } = props
+
         if (className !== undefined) {
             setupClassName(className, this.dom);
         }
@@ -78,7 +66,7 @@ class Element<T extends HTMLElementTags> {
             setupChildren(children, this.dom, isForceUpdate);
         }
 
-        Object.entries(props).forEach(([name, value]) => {
+        Object.entries(_props).forEach(([name, value]) => {
             if (name === 'events' || isPlainObject(value)) return;
 
             // Input and textarea current value ->
