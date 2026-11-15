@@ -1,4 +1,4 @@
-import type { ElementPropsType } from '../../../../dist/types';
+import type { ElementPropsType } from '@nuvo-js/core/types';
 
 export type ButtonProps = ElementPropsType<HTMLButtonElement> & {
     variant?: 'default' | 'error' | 'primary';

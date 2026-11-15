@@ -1,5 +1,5 @@
-import { SVGElement } from '../../../../../dist';
-import type { SVGElementPropsType } from '../../../../../dist/types';
+import { SVGElement } from '@nuvo-js/core';
+import type { SVGElementPropsType } from '@nuvo-js/core/types';
 
 function Trash(props: SVGElementPropsType) {
     return (

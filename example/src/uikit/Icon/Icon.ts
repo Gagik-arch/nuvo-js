@@ -1,4 +1,4 @@
-import { Element } from '../../../../dist';
+import { Element } from '@nuvo-js/core';
 import Icons from './assets/index';
 import type { IconProps } from './types';
 import styles from './style.module.css';

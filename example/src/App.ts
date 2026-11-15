@@ -1,6 +1,6 @@
 import {
     Element, Store, Fragment
-} from '../../dist';
+} from '@nuvo-js/core';
 import { Button, Input } from './uikit';
 import { generateUUID } from './utils';
 import Icon from './uikit/Icon';

@@ -1,6 +1,6 @@
 import type { InputProps } from './types';
 import styles from './input.module.css';
-import { Element } from '../../../../dist';
+import { Element } from '@nuvo-js/core';
 
 class Input<T extends string | number = string> extends Element<HTMLLabelElement> {
     public readonly input: Element<HTMLInputElement>;
