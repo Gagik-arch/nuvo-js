@@ -78,9 +78,7 @@ const element = new Element<HTMLDivElement>(
             'I am a div element.'
         ]
     }
-);
-
-document.body.append(element.dom);
+});
 ```
 
 The `.dom` property provides access to the underlying native DOM element.
