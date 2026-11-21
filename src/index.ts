@@ -2,7 +2,7 @@ import './global';
 
 import Element from './Element';
 import Fragment from './Fragment';
-import Store from './store';
+import Store from './Store';
 import SVGElement from './SVGElement';
 
 const createRoot = (

@@ -1,4 +1,5 @@
-import { isEqualObjects, isPlainObject } from './utils';
+import { isEqualObjects, isPlainObject } from '../utils';
+import type { Unsubscribe } from './types'
 
 class Store<T> {
     private state: T;
@@ -8,7 +9,7 @@ class Store<T> {
         this.state = initialState;
     }
 
-    public Subscribe(callback: (state: T) => void): () => void {
+    public Subscribe(callback: (state: T) => void): Unsubscribe {
         this.listeners.push(callback);
 
         return () => {
@@ -16,7 +17,7 @@ class Store<T> {
         };
     }
 
-    public Effect(callback: (state: T) => void): () => void {
+    public Effect(callback: (state: T) => void): Unsubscribe {
         callback(this.GetState());
 
         return this.Subscribe(callback);

@@ -15,7 +15,7 @@ class Element<T extends HTMLElementTags> {
         props?: ElementPropsType<T>,
         rootElement?: HTMLElement | null
     ) {
-        
+
         const {
             events,
             key,
@@ -36,7 +36,7 @@ class Element<T extends HTMLElementTags> {
 
         this.SetProps(_props as Omit<ElementPropsType<T>, 'events' | 'key'>);
 
-        this.SetEvents(events);
+        this.#SetEvents(events);
     }
 
     public SetProps(
@@ -132,32 +132,6 @@ class Element<T extends HTMLElementTags> {
         return this;
     }
 
-    public SetEvents(events: EventType<T> | undefined) {
-        const virtualDom = this.dom as VirtualHTMLElement<T>;
-
-        virtualDom.__eventController.abort();
-        virtualDom.__eventController = new AbortController();
-
-        virtualDom.__events = events ?? {};
-
-        if (!events) {
-            (this.dom as VirtualHTMLElement).__events = {};
-            return this;
-        }
-
-        Object.entries<EventType<T>[keyof EventType<T>]>(events)
-            .forEach(([type, listener]) => {
-                this.dom.addEventListener(
-                    type.replace(/^on/, ''),
-                    listener as EventListener,
-                    { signal: virtualDom.__eventController.signal }
-                );
-            });
-
-
-        return this;
-    }
-
     public Destroy() {
         const virtualDom = this.dom as VirtualHTMLElement;
         virtualDom.__eventController.abort('Element event is destroyed.');
@@ -203,6 +177,32 @@ class Element<T extends HTMLElementTags> {
             childList: true,
             subtree: true,
         });
+
+        return this;
+    }
+
+    #SetEvents(events: EventType<T> | undefined) {
+        const virtualDom = this.dom as VirtualHTMLElement<T>;
+
+        virtualDom.__eventController.abort();
+        virtualDom.__eventController = new AbortController();
+
+        virtualDom.__events = events ?? {};
+
+        if (!events) {
+            (this.dom as VirtualHTMLElement).__events = {};
+            return this;
+        }
+
+        Object.entries<EventType<T>[keyof EventType<T>]>(events)
+            .forEach(([type, listener]) => {
+                this.dom.addEventListener(
+                    type.replace(/^on/, ''),
+                    listener as EventListener,
+                    { signal: virtualDom.__eventController.signal }
+                );
+            });
+
 
         return this;
     }

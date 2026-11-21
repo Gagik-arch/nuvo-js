@@ -192,22 +192,12 @@ const button = new Element<HTMLButtonElement>(
     {
         children: ['Click me'],
         events: {
-            onClick: () => {
+            onclick: () => {
                 console.log('Button clicked');
             }
         }
     }
 );
-```
-
-Use `SetEvents()` to replace the element's current event listeners:
-
-```typescript
-button.SetEvents({
-    onClick: () => {
-        console.log('Updated click handler');
-    }
-});
 ```
 
 Nuvo manages listeners with an `AbortController`. Calling `SetEvents()` aborts the previous listeners before registering the new ones. Calling `Destroy()` also aborts the element's listeners.
@@ -403,8 +393,8 @@ store.Effect((state) => {
 | `GetState()` | Returns the current state. |
 | `SetState(value)` | Updates the state with a new value. |
 | `SetState(callback)` | Updates the state using the previous value. |
-| `Subscribe(callback)` | Listens for state changes. |
-| `Effect(callback)` | Executes immediately and listens for subsequent state changes. |
+| `Subscribe(callback)=>Unsubscribe` | Listens for state changes and returns function for cease listening. |
+| `Effect(callback)=>Unsubscribe` | Executes immediately and listens for subsequent state changes and  returns function for cease listening. |
 
 ## DOM Diffing
 
@@ -486,7 +476,7 @@ const list = new Element<HTMLOListElement>(
     }
 );
 
-todos.Effect((state) => {
+const unsubscribe = todos.Effect((state) => {
     list.SetProps({
         children: state.map(todo =>
             new Element<HTMLLIElement>(
@@ -513,6 +503,12 @@ todos.SetState(prev => [
 todos.SetState(prev =>
     prev.filter(todo => todo.id !== 'some-id')
 );
+
+// Stop listening
+list.OnUnMount(()=>{
+    unsubscribe()
+})
+// 
 ```
 
 ### Key best practices
