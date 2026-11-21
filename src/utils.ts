@@ -86,18 +86,12 @@ export const isEqualObjects = (
         const keysA = Reflect.ownKeys(a);
         const keysB = Reflect.ownKeys(b);
 
-        if (keysA.length !== keysB.length) {
-            return false;
-        }
-
+        if (keysA.length !== keysB.length)   return false;
+        
         for (const key of keysA) {
-            if (!Object.prototype.hasOwnProperty.call(b, key)) {
-                return false;
-            }
+            if (!Object.prototype.hasOwnProperty.call(b, key))    return false;
 
-            if (!isEqualObjects(a[key as string], b[key as string])) {
-                return false;
-            }
+            if (!isEqualObjects(a[key as string], b[key as string]))  return false;
         }
 
         return true;
