@@ -7,5 +7,5 @@
 </p>
 
 <p>
-  <a href="https://github.com/Gagik-arch/nuvo-js/docs/README.md">Read documentation</a>
+  <a href="https://github.com/Gagik-arch/nuvo-js/blob/main/docs/README.md">Read documentation</a>
 </p>
