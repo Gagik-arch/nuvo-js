@@ -3,7 +3,7 @@
 **Nuvo** is a lightweight, TypeScript-first UI library built around native DOM APIs.
 
 <p >
-  <a href="https://datewise-khaki.vercel.app">Live Demo</a>
+  <a href="https://example-ten-opal.vercel.app/">Live Demo</a>
 </p>
 
 <p>
