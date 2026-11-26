@@ -29,3 +29,12 @@ declare module '*.svg' {
     const content: string;
     export default content;
 }
+
+
+declare global {
+    interface Window {
+        nuvojs: typeof import('@nuvo-js/core');
+    }
+}
+
+export {};
