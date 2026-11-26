@@ -6,7 +6,7 @@ const root = document.getElementById('app');
 
 createRoot(root!, App());
 
-const nuvojs = window['nuvojs']
+const nuvojs = window.nuvojs
 
 console.log(nuvojs)
 
