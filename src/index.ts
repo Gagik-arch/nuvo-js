@@ -1,5 +1,3 @@
-import './global';
-
 import Element from './Element';
 import Fragment from './Fragment';
 import Store from './Store';
