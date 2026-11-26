@@ -99,14 +99,11 @@ function keyedDiff(
             continue;
         }
 
-        if (current.tagName !== newChild.tagName) {
+        if (isNotEqualTagName(current, newChild)) {
             current.replaceWith(newChild);
             oldByKey.set(newChild.__key, newChild);
             current = newChild;
-        } else if (
-            isNotEqualTagName(current, newChild)
-            || isNotEqualProps(current, newChild)
-            || current.innerHTML !== newChild.innerHTML) {
+        } else if (isNotEqualProps(current, newChild) || current.innerHTML !== newChild.innerHTML) {
             mergeAttributes(current, newChild);
             
             mergeEvents(current, newChild.__events)
