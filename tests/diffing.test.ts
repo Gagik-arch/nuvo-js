@@ -3,21 +3,18 @@ import Element from '../src/Element';
 
 describe('DOM child reconciliation', () => {
     it('updates text children in place by position', () => {
-        const list = new Element<HTMLUListElement>({
-            tagName: 'ul',
-            props: {
+        const list = new Element<HTMLUListElement>('ul',{
                 children: [
-                    new Element<HTMLLIElement>({ tagName: 'li', props: { children: ['A'] } }).dom,
-                    new Element<HTMLLIElement>({ tagName: 'li', props: { children: ['B'] } }).dom,
+                    new Element<HTMLLIElement>('li',{ children: ['A'] } ).dom,
+                    new Element<HTMLLIElement>('li',{ children: ['B']  }).dom,
                 ],
-            },
         });
 
         const oldFirst = list.dom.children[0];
         list.SetProps({
             children: [
-                new Element<HTMLLIElement>({ tagName: 'li', props: { children: ['Updated A'] } }).dom,
-                new Element<HTMLLIElement>({ tagName: 'li', props: { children: ['Updated B'] } }).dom,
+                new Element<HTMLLIElement>('li',{  children: ['Updated A'] } ).dom,
+                new Element<HTMLLIElement>('li',{  children: ['Updated B']  }).dom,
             ],
         });
 
@@ -26,9 +23,8 @@ describe('DOM child reconciliation', () => {
     });
 
     it('inserts and removes unkeyed children', () => {
-        const list = new Element<HTMLUListElement>({
-            tagName: 'ul',
-            props: { children: [document.createElement('li'), document.createElement('li')] },
+        const list = new Element<HTMLUListElement>('ul',{
+          children: [document.createElement('li'), document.createElement('li')] ,
         });
 
         list.SetProps({ children: [document.createElement('li')] });
@@ -44,17 +40,15 @@ describe('DOM child reconciliation', () => {
 
     it('reorders keyed children while reusing existing nodes', () => {
         const make = (key: string, text: string) =>
-            new Element<HTMLLIElement>({
-                tagName: 'li',
-                props: { key, children: [text] },
+            new Element<HTMLLIElement>('li',{
+              key, children: [text] ,
             }).dom;
 
         const a = make('a', 'A');
         const b = make('b', 'B');
         const c = make('c', 'C');
-        const list = new Element<HTMLUListElement>({
-            tagName: 'ul',
-            props: { children: [a, b, c] },
+        const list = new Element<HTMLUListElement>('ul',{
+           children: [a, b, c] ,
         });
 
         list.SetProps({ children: [make('c', 'C'), make('a', 'A'), make('b', 'B')] });
@@ -64,14 +58,12 @@ describe('DOM child reconciliation', () => {
     });
 
     it('rejects a mixture of keyed and unkeyed siblings', () => {
-        const keyed = new Element<HTMLLIElement>({
-            tagName: 'li',
-            props: { key: 'one' },
+        const keyed = new Element<HTMLLIElement>('li',{
+            key: 'one' ,
         }).dom;
 
-        const list = new Element<HTMLUListElement>({
-            tagName: 'ul',
-            props: { children: [] },
+        const list = new Element<HTMLUListElement>('ul',{
+            children: [] ,
         });
 
         expect(() => list.SetProps({
@@ -80,14 +72,12 @@ describe('DOM child reconciliation', () => {
     });
 
     it('rejects duplicate sibling keys', () => {
-        const make = () => new Element<HTMLLIElement>({
-            tagName: 'li',
-            props: { key: 'duplicate' },
+        const make = () => new Element<HTMLLIElement>('li',{
+            key: 'duplicate' ,
         }).dom;
 
-        const list = new Element<HTMLUListElement>({
-            tagName: 'ul',
-            props: { children: [] },
+        const list = new Element<HTMLUListElement>('ul',{
+           children: [] ,
         });
 
         expect(() => list.SetProps({ children: [make(), make()] }))
@@ -97,9 +87,8 @@ describe('DOM child reconciliation', () => {
     it('force-updates children by replacing all existing nodes', () => {
         const original = document.createElement('span');
         const replacement = document.createElement('span');
-        const parent = new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: { children: [original] },
+        const parent = new Element<HTMLDivElement>('div',{
+           children: [original] ,
         });
 
         parent.SetProps({ children: [replacement] }, true);

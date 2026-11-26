@@ -1,4 +1,4 @@
-import type { DOMElement, EventType, VirtualHTMLElement,ElementPropsType } from './Element/types';
+import type { DOMElement, EventType, VirtualHTMLElement, ElementPropsType } from './Element/types';
 
 export function camelToKebab(str: string) {
     return str.replace(/[A-Z]/g, match => '-' + match.toLowerCase());
@@ -18,15 +18,6 @@ export function setupClassName(
         if (dom.className !== className) {
             dom.classList.value = className;
         }
-    }
-}
-
-export function setupInnerHtml(
-    oldChild: DOMElement,
-    newChild: DOMElement
-) {
-    if (oldChild.innerHTML !== newChild.innerHTML) {
-        oldChild = newChild;
     }
 }
 
@@ -86,12 +77,12 @@ export const isEqualObjects = (
         const keysA = Reflect.ownKeys(a);
         const keysB = Reflect.ownKeys(b);
 
-        if (keysA.length !== keysB.length)   return false;
-        
-        for (const key of keysA) {
-            if (!Object.prototype.hasOwnProperty.call(b, key))    return false;
+        if (keysA.length !== keysB.length) return false;
 
-            if (!isEqualObjects(a[key as string], b[key as string]))  return false;
+        for (const key of keysA) {
+            if (!Object.prototype.hasOwnProperty.call(b, key)) return false;
+
+            if (!isEqualObjects(a[key as string], b[key as string])) return false;
         }
 
         return true;
@@ -100,25 +91,30 @@ export const isEqualObjects = (
     return false;
 };
 
-
 export function mergeAttributes(
     oldChild: VirtualHTMLElement,
     newChild: VirtualHTMLElement
 ) {
-    for (let i = 0; i < newChild.getAttributeNames().length; i++) {
-        const oldChildAtt = oldChild.attributes[i];
-        const newChildAtt = newChild.attributes[i];
+    const oldAttributes = oldChild.attributes;
 
-        if ((oldChildAtt && newChildAtt) && oldChildAtt?.name === newChildAtt?.name && oldChildAtt?.value !== newChildAtt?.value) {
-            oldChild.setAttribute(oldChildAtt.name, newChildAtt.value);
-            mergeEvents(oldChild, newChild.__events)
+    for (const attribute of Array.from(newChild.attributes)) {
+        if (  oldChild.getAttribute(attribute.name) !== attribute.value ) {
+            oldChild.setAttribute(attribute.name, attribute.value);
         }
     }
+
+    for (const attribute of Array.from(oldAttributes)) {
+        if (!newChild.hasAttribute(attribute.name)) {
+            oldChild.removeAttribute(attribute.name);
+        }
+    }
+
+    mergeEvents(oldChild, newChild.__events);
 }
 
 export function mergeEvents(
     dom: VirtualHTMLElement,
-    events: EventType<any> | undefined
+    events: EventType | undefined
 ) {
     dom.__eventController?.abort();
 

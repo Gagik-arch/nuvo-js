@@ -4,7 +4,7 @@ import type {
 } from './types';
 import {
     isPlainObject, setupClassName, setupStyle
-} from '../utils';
+} from '../helpers';
 import { isWritableDOMProperty, setupChildren } from './utils';
 
 class Element<T extends HTMLElementTags> {
@@ -26,7 +26,7 @@ class Element<T extends HTMLElementTags> {
         const virtualDom = this.dom as VirtualHTMLElement;
         virtualDom.__eventController = new AbortController();
 
-        if (key) {
+        if (key !== undefined && key !== null) {
             virtualDom.__key = key;
         }
 

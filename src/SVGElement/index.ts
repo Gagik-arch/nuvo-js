@@ -1,7 +1,7 @@
 import { setupChildren } from '../Element/utils';
 import {
     setupClassName, setupStyle
-} from '../utils';
+} from '../helpers';
 import type {
     SVGTags, SVGElementPropsType, HTMLSVGTags
 } from './types';

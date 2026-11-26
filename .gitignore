@@ -71,3 +71,11 @@ coverage/src/Element/utils.ts.html
 coverage/src/SVGElement/index.html
 coverage/src/SVGElement/index.ts.html
 coverage/src/SVGElement/types.ts.html
+coverage/lcov-report/src/helpers.ts.html
+coverage/lcov-report/src/Store/index.html
+coverage/lcov-report/src/Store/index.ts.html
+coverage/lcov-report/src/Store/types.ts.html
+coverage/src/helpers.ts.html
+coverage/src/Store/index.html
+coverage/src/Store/index.ts.html
+coverage/src/Store/types.ts.html
