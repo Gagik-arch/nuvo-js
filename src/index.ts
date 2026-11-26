@@ -16,7 +16,7 @@ const createRoot = (
     }
 };
 
- const nuvojs = {
+const nuvojs = {
     Element,
     Store,
     Fragment,
@@ -24,10 +24,9 @@ const createRoot = (
     createRoot
 } as const 
 
-
 if (typeof window !== 'undefined') {
-    Object.defineProperty(window, 'nuvo-js', {
-        value: Object.freeze(nuvojs),
+    Object.defineProperty(window, 'nuvojs', {
+        value: nuvojs,
         writable: false,
         configurable: false,
         enumerable: false

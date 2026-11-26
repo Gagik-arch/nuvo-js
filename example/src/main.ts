@@ -6,7 +6,7 @@ const root = document.getElementById('app');
 
 createRoot(root!, App());
 
-const nuvojs = window['nuvo-js']
+const nuvojs = window['nuvojs']
 
 console.log(nuvojs)
 

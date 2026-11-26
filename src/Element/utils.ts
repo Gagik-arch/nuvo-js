@@ -1,4 +1,4 @@
-import { mergeAttributes, mergeEvents } from '../utils';
+import { mergeAttributes, mergeEvents } from '../helpers';
 import type {
     Children, DOMElement, VirtualHTMLElement
 } from './types';
@@ -14,8 +14,8 @@ function hasKeyedChildren(
         key => key !== undefined && key !== null
     );
 
-    if (!hasKeys)   return false;
-    
+    if (!hasKeys) return false;
+
     const hasMissingKeys = keys.some(
         key => key === undefined || key === null
     );
@@ -37,24 +37,33 @@ function hasKeyedChildren(
     return true;
 }
 
-export function compareProps(
+export function isNotEqualProps(
     oldNode: DOMElement | null,
     newNode: DOMElement | null
-) {
+): boolean {
     if (!oldNode || !newNode) return false;
 
     const oldNAttrs = oldNode.attributes;
     const newNAttrs = newNode.attributes;
 
-    if (oldNode.tagName !== newNode.tagName) return false;
-
-    if (oldNAttrs.length !== newNAttrs.length) return false;
+    if (oldNAttrs.length !== newNAttrs.length) return true;
 
     for (const attr of oldNAttrs) {
-        if (newNode.getAttribute(attr.name) !== attr.value)  return true;
+        if (newNode.getAttribute(attr.name) !== attr.value) return true;
     }
 
     return false;
+}
+
+export function isNotEqualTagName(
+    oldNode: DOMElement | null,
+    newNode: DOMElement | null
+): boolean {
+    if (!oldNode || !newNode) return false;
+
+    if (oldNode.tagName !== newNode.tagName) return true;
+
+    return false
 }
 
 function keyedDiff(
@@ -86,7 +95,7 @@ function keyedDiff(
         if (!current) {
             dom.insertBefore(newChild, anchor);
             anchor = newChild.nextElementSibling;
-            
+
             continue;
         }
 
@@ -94,8 +103,12 @@ function keyedDiff(
             current.replaceWith(newChild);
             oldByKey.set(newChild.__key, newChild);
             current = newChild;
-        } else if (compareProps(current, newChild)) {
+        } else if (
+            isNotEqualTagName(current, newChild)
+            || isNotEqualProps(current, newChild)
+            || current.innerHTML !== newChild.innerHTML) {
             mergeAttributes(current, newChild);
+            
             mergeEvents(current, newChild.__events)
         }
 
@@ -118,8 +131,19 @@ function unKeyedDiff(dom: DOMElement, newChildren: DOMElement[]) {
 
         let shouldReplace;
 
-        if (oldNode?.nodeType === Node.ELEMENT_NODE && newNode?.nodeType === Node.ELEMENT_NODE) {
-            shouldReplace = compareProps(oldNode, newNode) || oldNode.innerHTML !== newNode.innerHTML;
+        if (
+            oldNode?.nodeType === Node.ELEMENT_NODE &&
+            newNode?.nodeType === Node.ELEMENT_NODE
+        ) {
+            shouldReplace =
+                isNotEqualTagName(oldNode, newNode)
+                || isNotEqualProps(oldNode, newNode)
+                || oldNode.innerHTML !== newNode.innerHTML
+        } else if (
+            oldNode?.nodeType === Node.TEXT_NODE &&
+            newNode?.nodeType === Node.TEXT_NODE
+        ) {
+            shouldReplace = oldNode.textContent !== newNode.textContent;
         } else {
             shouldReplace = oldNode !== newNode;
         }
@@ -137,7 +161,7 @@ function unKeyedDiff(dom: DOMElement, newChildren: DOMElement[]) {
 export function setupChildren<T extends DOMElement>(
     children: ((childNodes: Set<ChildNode>) => Set<ChildNode>) | Children[] | undefined,
     dom: T,
-    isForceUpdate: boolean
+    isForceUpdate: boolean = false
 ) {
     if (children) {
         const newChildren
@@ -174,12 +198,10 @@ export function isWritableDOMProperty(
         );
 
         if (descriptor) {
-            // Accessor property
             if (descriptor.get || descriptor.set) {
                 return typeof descriptor.set === 'function';
             }
 
-            // Data property
             return descriptor.writable === true;
         }
 

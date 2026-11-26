@@ -58,7 +58,7 @@ if (root) {
 Nuvo is also accessible through the browser global namespace:
 
 ```javascript
-const nuvojs = window['nuvo-js'];
+const nuvojs = window['nuvojs'];
 
 console.log(nuvojs);
 ```

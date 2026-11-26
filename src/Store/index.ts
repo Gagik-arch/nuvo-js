@@ -1,4 +1,4 @@
-import { isEqualObjects, isPlainObject } from '../utils';
+import { isEqualObjects, isPlainObject } from '../helpers';
 import type { Unsubscribe } from './types'
 
 class Store<T> {

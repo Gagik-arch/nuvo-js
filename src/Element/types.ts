@@ -14,7 +14,7 @@ export type HTMLElementTags = HTMLElementTagNameMap[HTMLTags];
 
 export type Children = NodeChildren | DocumentFragment | HTMLElement;
 
-export type EventType<T extends Element> = {
+export type EventType<T extends HTMLElementTags =  HTMLElement> = {
     [K in keyof Handlers]?: Handlers[K] extends ((this: T, ev: infer E) => void) | null
     ? (ev: E) => void
     : never;
@@ -27,13 +27,13 @@ export type ElementPropsType<T extends HTMLElementTags = HTMLElement>
     & {
         children?: Children[];
         className?: ((classList: DOMTokenList) => void) | string;
-        style?: Partial<HTMLElement['style']>;
+        style?: Partial<T['style']>;
         events?: EventType<T>;
-        key?: string;
+        key?: string | number;
     };
 
 export type VirtualHTMLElement<T extends HTMLElementTags = HTMLElement> = DOMElement & {
-    __key?: string;
+    __key?: string | number;
     __events: EventType<T>;
     __eventController: AbortController;
 };

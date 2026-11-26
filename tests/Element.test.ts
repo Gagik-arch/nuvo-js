@@ -7,9 +7,8 @@ afterEach(() => {
 
 describe('Element', () => {
     it('creates the requested native HTML element', () => {
-        const element = new Element<HTMLButtonElement>({
-            tagName: 'button',
-            props: { children: ['Save'] },
+        const element = new Element<HTMLButtonElement>('button',{
+           children: ['Save'] ,
         });
 
         expect(element.dom).toBeInstanceOf(HTMLButtonElement);
@@ -19,25 +18,18 @@ describe('Element', () => {
 
     it('appends itself to rootElement when provided', () => {
         const root = document.createElement('main');
-        const element = new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: {},
-            rootElement: root,
-        });
+        const element = new Element<HTMLDivElement>('div',{},root);
 
         expect(root.firstElementChild).toBe(element.dom);
     });
 
     it('sets className, style, standard properties and data attributes', () => {
-        const element = new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: {
+        const element = new Element<HTMLDivElement>('div',{
                 className: 'card active',
                 style: { backgroundColor: 'red', marginTop: '4px' },
                 id: 'profile',
                 title: 'Profile card',
                 'data-testid': 'profile-card',
-            },
         });
 
         expect(element.dom.className).toBe('card active');
@@ -49,14 +41,11 @@ describe('Element', () => {
     });
 
     it('supports className callback for conditional classes', () => {
-        const element = new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: {
+        const element = new Element<HTMLDivElement>('div',{
                 className: classes => {
                     classes.add('active');
                     classes.add('selected');
                 },
-            },
         });
 
         expect(element.dom.classList.contains('active')).toBe(true);
@@ -64,9 +53,8 @@ describe('Element', () => {
     });
 
     it('updates properties and removes nullable attributes', () => {
-        const element = new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: { id: 'before', title: 'old' },
+        const element = new Element<HTMLDivElement>('div',{
+            id: 'before', title: 'old' ,
         });
 
         expect(element.SetProps({ id: 'after', title: null })).toBe(element);
@@ -75,9 +63,8 @@ describe('Element', () => {
     });
 
     it('handles input value as a DOM value and attribute', () => {
-        const input = new Element<HTMLInputElement>({
-            tagName: 'input',
-            props: { value: 'first' },
+        const input = new Element<HTMLInputElement>('input',{
+            value: 'first' ,
         });
 
         input.SetProps({ value: 'second' });
@@ -89,9 +76,8 @@ describe('Element', () => {
     });
 
     it('updates children and rejects non-array children at runtime', () => {
-        const element = new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: { children: ['first'] },
+        const element = new Element<HTMLDivElement>('div',{
+          children: ['first'] ,
         });
 
         element.SetProps({ children: ['second', 'third'] });
@@ -104,9 +90,8 @@ describe('Element', () => {
 
     it('registers event handlers and removes them on Destroy', () => {
         const onClick = vi.fn();
-        const element = new Element<HTMLButtonElement>({
-            tagName: 'button',
-            props: { events: { onclick: onClick } },
+        const element = new Element<HTMLButtonElement>('button',{
+            events: { onclick: onClick } ,
         });
 
         element.dom.click();
@@ -120,9 +105,8 @@ describe('Element', () => {
 
     it('Remove detaches the node without destroying its event controller', () => {
         const onClick = vi.fn();
-        const element = new Element<HTMLButtonElement>({
-            tagName: 'button',
-            props: { events: { onclick: onClick } },
+        const element = new Element<HTMLButtonElement>('button',{
+             events: { onclick: onClick } ,
         });
         document.body.append(element.dom);
 
@@ -133,10 +117,8 @@ describe('Element', () => {
     });
 
     it('calls OnMount immediately when already connected', () => {
-        const element = new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: {},
-        });
+        const element = new Element<HTMLDivElement>('div');
+
         document.body.append(element.dom);
         const callback = vi.fn();
 
@@ -145,10 +127,7 @@ describe('Element', () => {
     });
 
     it('calls OnMount after the node is connected', async () => {
-        const element = new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: {},
-        });
+        const element = new Element<HTMLDivElement>('div');
         const callback = vi.fn();
 
         element.OnMount(callback);
@@ -158,10 +137,7 @@ describe('Element', () => {
     });
 
     it('calls OnUnMount after the connected node is removed', async () => {
-        const element = new Element<HTMLDivElement>({
-            tagName: 'div',
-            props: {},
-        });
+        const element = new Element<HTMLDivElement>('div');
         const callback = vi.fn();
         document.body.append(element.dom);
 
