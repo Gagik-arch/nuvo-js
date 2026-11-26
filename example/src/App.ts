@@ -91,7 +91,7 @@ function App() {
                 })
                 : [
                     new Element<HTMLSpanElement>('span',{
-                            children: ['Todos does not exists!'],
+                            children: [`There aren't any to-dos!`],
                     }).dom
                 ],
         });
